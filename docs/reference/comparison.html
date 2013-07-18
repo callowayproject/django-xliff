@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Django XML to XLIFF &mdash; django-xliff 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="django-xliff 0.1 documentation" href="../index.html" />
+    <link rel="up" title="Reference" href="index.html" />
+    <link rel="next" title="Settings" href="settings.html" />
+    <link rel="prev" title="Reference" href="index.html" /> 
+  </head>
+  <body>
+<div id="docstitle">
+	<p>django-xliff 0.1 documentation</p>
+</div>
+<div id="header">
+	<div id="title"><h1>Django XML to XLIFF</h1></div>
+	<ul id="headerButtons">
+		<li id="toc_button"><div class="headerButton"><a href="#">Table of Contents</a></div></li>
+		<li id="page_buttons">
+			<div class="headerButton"><a href="../genindex.html" title="General Index" accesskey="I">index</a></div>
+			<div class="headerButton"><a href="settings.html" title="Settings" accesskey="N">next</a></div>
+			<div class="headerButton"><a href="index.html" title="Reference" accesskey="P">previous</a></div>
+		</li>
+	</ul>
+</div>
+
+<div id="sphinxsidebar">
+  <div class="sphinxsidebarwrapper">
+	<ul><li class="toctree-l1"><a href="../index.html">Main Page</a></li></ul>
+	<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Django XML to XLIFF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html">Settings</a></li>
+</ul>
+</li>
+</ul>
+
+    <div id="searchbox" style="display: none">
+      
+        <form class="search" action="../search.html" method="get">
+			<div class="search-wrapper">
+			<span class="search-left"></span>
+			<input class="prettysearch" type="text" name="q" size="18" />
+			<span class="search-right">&nbsp;</span>
+			</div>
+          <input type="submit" value="Search" class="searchbutton" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+        <p class="searchtip" style="font-size: 90%">
+        Enter search terms or a module, class or function name.
+        </p>
+    </div>
+    <script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+</div>
+
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="django-xml-to-xliff">
+<h1>Django XML to XLIFF<a class="headerlink" href="#django-xml-to-xliff" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="heading">
+<h2>Heading<a class="headerlink" href="#heading" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;django-objects</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;xliff</span> <span class="na">xmlns=</span><span class="s">&quot;urn:oasis:names:tc:xliff:document:1.2&quot;</span>
+       <span class="na">version=</span><span class="s">&quot;1.2&quot;</span>
+       <span class="na">xmlns:d=</span><span class="s">&quot;https://docs.djangoproject.com/&quot;</span><span class="nt">&gt;</span>
+</pre></div>
+</div>
+<p>The XLIFF header is technically one line, just like the django-objects tag. I&#8217;ve added a Django namespace (<tt class="docutils literal"><span class="pre">d</span></tt>) for a few Django-specific attributes used later on.</p>
+</div>
+<div class="section" id="object">
+<h2>Object<a class="headerlink" href="#object" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;object</span> <span class="na">pk=</span><span class="s">&quot;1&quot;</span> <span class="na">model=</span><span class="s">&quot;simpleapp.article&quot;</span><span class="nt">&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;file</span> <span class="na">datatype=</span><span class="s">&quot;database&quot;</span>
+      <span class="na">source-language=</span><span class="s">&quot;en-us&quot;</span>
+      <span class="na">original=</span><span class="s">&quot;simpleapp.article.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;group</span> <span class="na">resname=</span><span class="s">&quot;simpleapp.article.1&quot;</span> <span class="na">restype=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">source-language</span></tt> attribute is assigned Django&#8217;s <tt class="docutils literal"><span class="pre">LANGUAGE_CODE</span></tt> setting. I decided the incorporate the id or primary key into the naming and identification within the XLIFF file, thus <tt class="docutils literal"><span class="pre">&lt;file</span> <span class="pre">originial=&quot;&quot;&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;group</span> <span class="pre">resname=&quot;&quot;&gt;</span></tt> both use the <tt class="docutils literal"><span class="pre">app.model.pk</span></tt> dotted notation for identity.</p>
+<p>Why are <tt class="docutils literal"><span class="pre">&lt;file</span> <span class="pre">originial=&quot;&quot;&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;group</span> <span class="pre">resname=&quot;&quot;&gt;</span></tt> the same? Initially <tt class="docutils literal"><span class="pre">&lt;file&gt;</span></tt> was going to be equivalent to a database and use <tt class="docutils literal"><span class="pre">app.model</span></tt> and the <tt class="docutils literal"><span class="pre">&lt;group&gt;</span></tt>&#8216;s would be rows and use <tt class="docutils literal"><span class="pre">app.model.pk</span></tt>. However several translating tools I used for testing got confused, so now every object is redundantly enclosed in <tt class="docutils literal"><span class="pre">&lt;file&gt;&lt;body&gt;&lt;group&gt;</span></tt> tags.</p>
+</div>
+<div class="section" id="field">
+<h2>Field<a class="headerlink" href="#field" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;field</span> <span class="na">to=</span><span class="s">&quot;simpleapp.author&quot;</span> <span class="na">name=</span><span class="s">&quot;author&quot;</span> <span class="na">rel=</span><span class="s">&quot;ManyToOneRel&quot;</span><span class="nt">&gt;</span>2<span class="nt">&lt;/field&gt;</span>
+<span class="nt">&lt;field</span> <span class="na">type=</span><span class="s">&quot;CharField&quot;</span> <span class="na">name=</span><span class="s">&quot;headline&quot;</span><span class="nt">&gt;</span>Poker has no place on ESPN<span class="nt">&lt;/field&gt;</span>
+<span class="nt">&lt;field</span> <span class="na">type=</span><span class="s">&quot;DateTimeField&quot;</span> <span class="na">name=</span><span class="s">&quot;pub_date&quot;</span><span class="nt">&gt;</span>2006-06-16T11:00:00<span class="nt">&lt;/field&gt;</span>
+<span class="nt">&lt;field</span> <span class="na">to=</span><span class="s">&quot;simpleapp.category&quot;</span> <span class="na">name=</span><span class="s">&quot;categories&quot;</span> <span class="na">rel=</span><span class="s">&quot;ManyToManyRel&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;object</span> <span class="na">pk=</span><span class="s">&quot;3&quot;</span><span class="nt">&gt;&lt;/object&gt;</span>
+  <span class="nt">&lt;object</span> <span class="na">pk=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;&lt;/object&gt;</span>
+<span class="nt">&lt;/field&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;trans-unit</span> <span class="na">restype=</span><span class="s">&quot;x-ForeignKey&quot;</span>
+            <span class="na">d:keytype=</span><span class="s">&quot;pk&quot;</span>
+            <span class="na">d:to=</span><span class="s">&quot;simpleapp.author&quot;</span>
+            <span class="na">d:rel=</span><span class="s">&quot;ManyToOneRel&quot;</span>
+            <span class="na">translate=</span><span class="s">&quot;no&quot;</span>
+            <span class="na">resname=</span><span class="s">&quot;author&quot;</span>
+            <span class="na">id=</span><span class="s">&quot;author&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;source&gt;</span>2<span class="nt">&lt;/source&gt;</span>
+<span class="nt">&lt;/trans-unit&gt;</span>
+<span class="nt">&lt;trans-unit</span> <span class="na">restype=</span><span class="s">&quot;x-CharField&quot;</span>
+            <span class="na">maxwidth=</span><span class="s">&quot;50&quot;</span>
+            <span class="na">size-unit=</span><span class="s">&quot;char&quot;</span>
+            <span class="na">translate=</span><span class="s">&quot;yes&quot;</span>
+            <span class="na">resname=</span><span class="s">&quot;headline&quot;</span>
+            <span class="na">id=</span><span class="s">&quot;headline&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;source&gt;</span>Poker has no place on ESPN<span class="nt">&lt;/source&gt;</span>
+<span class="nt">&lt;/trans-unit&gt;</span>
+<span class="nt">&lt;trans-unit</span> <span class="na">restype=</span><span class="s">&quot;x-DateTimeField&quot;</span>
+            <span class="na">translate=</span><span class="s">&quot;no&quot;</span>
+            <span class="na">resname=</span><span class="s">&quot;pub_date&quot;</span>
+            <span class="na">id=</span><span class="s">&quot;pub_date&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;source&gt;</span>2006-06-16T11:00:00<span class="nt">&lt;/source&gt;</span>
+<span class="nt">&lt;/trans-unit&gt;</span>
+<span class="nt">&lt;trans-unit</span> <span class="na">restype=</span><span class="s">&quot;x-ManyToManyField&quot;</span>
+            <span class="na">d:keytype=</span><span class="s">&quot;pk&quot;</span>
+            <span class="na">d:to=</span><span class="s">&quot;simpleapp.category&quot;</span>
+            <span class="na">d:rel=</span><span class="s">&quot;ManyToManyRel&quot;</span>
+            <span class="na">translate=</span><span class="s">&quot;no&quot;</span>
+            <span class="na">resname=</span><span class="s">&quot;categories&quot;</span>
+            <span class="na">id=</span><span class="s">&quot;1.3&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;source&gt;</span>3<span class="nt">&lt;/source&gt;</span>
+<span class="nt">&lt;/trans-unit&gt;</span>
+<span class="nt">&lt;trans-unit</span> <span class="na">restype=</span><span class="s">&quot;x-ManyToManyField&quot;</span>
+            <span class="na">d:keytype=</span><span class="s">&quot;pk&quot;</span>
+            <span class="na">d:to=</span><span class="s">&quot;simpleapp.category&quot;</span>
+            <span class="na">d:rel=</span><span class="s">&quot;ManyToManyRel&quot;</span>
+            <span class="na">translate=</span><span class="s">&quot;no&quot;</span>
+            <span class="na">resname=</span><span class="s">&quot;categories&quot;</span>
+            <span class="na">id=</span><span class="s">&quot;1.1&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;source&gt;</span>1<span class="nt">&lt;/source&gt;</span>
+<span class="nt">&lt;/trans-unit&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="common-attributes">
+<h3>Common attributes<a class="headerlink" href="#common-attributes" title="Permalink to this headline">¶</a></h3>
+<p>Django&#8217;s default XML export doesn&#8217;t contain any indication of the field&#8217;s type. That metadata might be useful during translation, so I put in the <tt class="docutils literal"><span class="pre">restype</span></tt> attribute with an <tt class="docutils literal"><span class="pre">x-</span></tt> prefix, the allowable way to extend that attribute.</p>
+<p>The <tt class="docutils literal"><span class="pre">resname</span></tt> attribute contains the field&#8217;s name. The <tt class="docutils literal"><span class="pre">id</span></tt> attribute is also the field&#8217;s name, except for <tt class="xref py py-class docutils literal"><span class="pre">ManyToManyField`s.</span> <span class="pre">The</span> <span class="pre">``id`</span></tt>s need to be unique across all the siblings, so I use the record&#8217;s id and the relation&#8217;s id.</p>
+<p>Most fields do not require translation, so only <tt class="xref py py-class docutils literal"><span class="pre">CharField</span></tt>s and <tt class="xref py py-class docutils literal"><span class="pre">TextField</span></tt>s have the <tt class="docutils literal"><span class="pre">translate</span></tt> attribute set to &#8220;yes&#8221;. All other fields have it set to &#8220;no&#8221;.</p>
+</div>
+<div class="section" id="character-fields">
+<h3>Character fields<a class="headerlink" href="#character-fields" title="Permalink to this headline">¶</a></h3>
+<p>Character fields also include two additional attributes: <tt class="docutils literal"><span class="pre">maxwidth</span></tt> and <tt class="docutils literal"><span class="pre">size-unit</span></tt>. <tt class="docutils literal"><span class="pre">maxwidth</span></tt> is the length allowed for that character field, (you don&#8217;t want to make a translation that won&#8217;t fit) and <tt class="docutils literal"><span class="pre">size-unit</span></tt> specifies that the width is in Unicode characters.</p>
+</div>
+<div class="section" id="relations">
+<h3>Relations<a class="headerlink" href="#relations" title="Permalink to this headline">¶</a></h3>
+<p><tt class="xref py py-class docutils literal"><span class="pre">ForeignKey</span></tt>s and <tt class="xref py py-class docutils literal"><span class="pre">ManyToManyField</span></tt>s require a few extra attributes. The default Django XML uses the <tt class="docutils literal"><span class="pre">rel</span></tt> and <tt class="docutils literal"><span class="pre">to</span></tt> attributes to specify the type of relation and the related model. And, if the export is using natural keys, it includes extra tags for those.</p>
+<p>I achieve this in XLIFF using a separate Django namespace (<tt class="docutils literal"><span class="pre">d</span></tt>). <tt class="docutils literal"><span class="pre">d:keytype</span></tt> specifies if it is using the primary key (<tt class="docutils literal"><span class="pre">pk</span></tt>) or the natural key (<tt class="docutils literal"><span class="pre">natural</span></tt>). <tt class="docutils literal"><span class="pre">d:to</span></tt> and <tt class="docutils literal"><span class="pre">d:rel</span></tt> are equivalent to the <tt class="docutils literal"><span class="pre">to</span></tt> and <tt class="docutils literal"><span class="pre">rel</span></tt> attributes in the default Django XML.</p>
+<p>Natural keys are encoded in the <tt class="docutils literal"><span class="pre">&lt;source&gt;</span></tt> tag by concatenating multiple values with the <tt class="docutils literal"><span class="pre">NATURAL_KEY_SEPARATOR</span></tt> setting. It defaults to <tt class="docutils literal"><span class="pre">;</span></tt>.</p>
+</div>
+</div>
+</div>
+
+
+          </div> 
+        </div>
+      </div>
+    <div class="footer">
+    <p>
+      &copy; Copyright 2013, Corey Oordt.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b1.
+	</p>
+    </div>
+      <div class="clearer"></div>
+    </div>
+	<div id="breadcrumbs">
+		<a href="index.html" accesskey="U">Reference</a><img src="../_static/triangle_closed.png" height="9" width="9" alt="&gt;">
+		Django XML to XLIFF
+		</ul>
+	</div>
+	<script type="text/javascript" charset="utf-8" src="../_static/toc.js"></script>
+  </body>
+</html>

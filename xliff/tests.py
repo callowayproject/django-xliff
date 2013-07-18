@@ -142,7 +142,7 @@ class SerializersTestBase(object):
         self.assertTrue(Article.objects.filter(headline=old_headline))
         self.assertFalse(Article.objects.filter(headline=new_headline))
 
-        for model in models:
+        for model in modellist:
             model.save()
 
         # After saving, new headline is in place
@@ -365,6 +365,30 @@ class XliffSerializerTestCase(SerializersTestBase, TestCase):
                     temp.append(getInnerText(child))
                 ret_list.append("".join(temp))
         return ret_list
+
+    def test_import_translation(self):
+        """
+        It should import the target text, if available
+        """
+        orig = "Poker has no place on ESPN"
+        old_headline = "<source>%s</source>" % orig
+        translation = "Poker hat keinen Platz im Fernsehen"
+        new_headline = '%s<target xml:lang="de">%s</target>' % (old_headline, translation)
+        serial_str = serializers.serialize(self.serializer_name,
+                                           Article.objects.all())
+        serial_str = serial_str.replace(old_headline, new_headline)
+        modellist = list(serializers.deserialize(self.serializer_name, serial_str))
+
+        # Prior to saving, old headline is in place
+        self.assertTrue(Article.objects.filter(headline=orig))
+        self.assertFalse(Article.objects.filter(headline=translation))
+
+        for model in modellist:
+            model.save()
+
+        # After saving, new headline is in place
+        self.assertTrue(Article.objects.filter(headline=translation))
+        self.assertFalse(Article.objects.filter(headline=orig))
 
 
 class XliffSerializerTransactionTestCase(SerializersTransactionTestBase, TransactionTestCase):

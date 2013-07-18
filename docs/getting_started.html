@@ -48,10 +48,11 @@
 	<ul><li class="toctree-l1"><a href="index.html">Main Page</a></li></ul>
 	<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#heading">Heading</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#object">Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#field">Field</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#exporting-and-importing">Exporting and Importing</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
 </ul>
 
@@ -84,58 +85,35 @@
             
   <div class="section" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<p>Django XML to XLIFF</p>
-</div>
-<div class="section" id="heading">
-<h1>Heading<a class="headerlink" href="#heading" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;django-objects</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">Using <tt class="docutils literal"><span class="pre">pip</span></tt> or <tt class="docutils literal"><span class="pre">easy_install</span></tt>.</p>
+<div class="highlight-bash"><div class="highlight"><pre>pip install django-xliff
 </pre></div>
 </div>
-<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;xliff</span> <span class="na">xmlns=</span><span class="s">&quot;urn:oasis:names:tc:xliff:document:1.2&quot;</span>
-       <span class="na">version=</span><span class="s">&quot;1.2&quot;</span>
-       <span class="na">xmlns:d=</span><span class="s">&quot;https://docs.djangoproject.com/&quot;</span><span class="nt">&gt;</span>
+<p>or</p>
+<div class="highlight-bash"><div class="highlight"><pre>easy_install django-xliff
 </pre></div>
 </div>
-<p>The XLIFF header is technically one line, just like the django-objects tag. I&#8217;ve added a Django namespace (<tt class="docutils literal"><span class="pre">d</span></tt>) for a few Django-specific attributes used later on.</p>
-</div>
-<div class="section" id="object">
-<h1>Object<a class="headerlink" href="#object" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;object</span> <span class="na">pk=</span><span class="s">&quot;1&quot;</span> <span class="na">model=</span><span class="s">&quot;simpleapp.article&quot;</span><span class="nt">&gt;</span>
+</li>
+<li><p class="first">Add <tt class="docutils literal"><span class="pre">&quot;xliff&quot;,</span></tt> to your <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> setting.</p>
+</li>
+<li><p class="first">Create a <tt class="docutils literal"><span class="pre">SERIALIZATION_MODULES</span></tt> setting where the key is the file extension (<tt class="docutils literal"><span class="pre">xliff</span></tt> or <tt class="docutils literal"><span class="pre">xlf</span></tt>) and the value is <tt class="docutils literal"><span class="pre">'xliff.xliff_serializer'</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SERIALIZATION_MODULES</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;xliff&#39;</span><span class="p">:</span> <span class="s">&#39;xliff.xliff_serializer&#39;</span><span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;file</span> <span class="na">datatype=</span><span class="s">&quot;database&quot;</span>
-      <span class="na">source-language=</span><span class="s">&quot;en-us&quot;</span>
-      <span class="na">original=</span><span class="s">&quot;simpleapp.article.1&quot;</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;body&gt;</span>
-    <span class="nt">&lt;group</span> <span class="na">resname=</span><span class="s">&quot;simpleapp.article.1&quot;</span> <span class="na">restype=</span><span class="s">&quot;row&quot;</span><span class="nt">&gt;</span>
-</pre></div>
+</li>
+</ol>
 </div>
-<p>The <tt class="docutils literal"><span class="pre">source-language</span></tt> attribute is assigned Django&#8217;s <tt class="docutils literal"><span class="pre">LANGUAGE_CODE</span></tt> setting. I decided the incorporate the id or primary key into the naming and identification within the XLIFF file, thus <tt class="docutils literal"><span class="pre">&lt;file</span> <span class="pre">originial=&quot;&quot;&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;group</span> <span class="pre">resname=&quot;&quot;&gt;</span></tt> both use the <tt class="docutils literal"><span class="pre">app.model.pk</span></tt> dotted notation for identity.</p>
-<p>Why are <tt class="docutils literal"><span class="pre">&lt;file</span> <span class="pre">originial=&quot;&quot;&gt;</span></tt> and <tt class="docutils literal"><span class="pre">&lt;group</span> <span class="pre">resname=&quot;&quot;&gt;</span></tt> the same? Initially <tt class="docutils literal"><span class="pre">&lt;file&gt;</span></tt> was going to be equivalent to a database and use <tt class="docutils literal"><span class="pre">app.model</span></tt> and the <tt class="docutils literal"><span class="pre">&lt;group&gt;</span></tt>&#8216;s would be rows and use <tt class="docutils literal"><span class="pre">app.model.pk</span></tt>. However several translating tools I used for testing got confused, so now every object is redundantly enclosed in <tt class="docutils literal"><span class="pre">&lt;file&gt;&lt;body&gt;&lt;group&gt;</span></tt> tags.</p>
+<div class="section" id="exporting-and-importing">
+<h2>Exporting and Importing<a class="headerlink" href="#exporting-and-importing" title="Permalink to this headline">¶</a></h2>
+<p>Use Django&#8217;s <a class="reference external" href="https://docs.djangoproject.com/en/1.5/topics/serialization/">serialization</a> tools. For example, using the <a class="reference external" href="https://docs.djangoproject.com/en/1.5/ref/django-admin/#dumpdata-appname-appname-appname-model">dumpdata</a> command:</p>
+<div class="highlight-python"><pre>django-admin.py dumpdata --format=xliff simpleapp &gt; data.xliff</pre>
 </div>
-<div class="section" id="field">
-<h1>Field<a class="headerlink" href="#field" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;field</span> <span class="na">type=</span><span class="s">&quot;CharField&quot;</span> <span class="na">name=</span><span class="s">&quot;headline&quot;</span><span class="nt">&gt;</span>Social media collapses. World still turns.<span class="nt">&lt;/field&gt;</span>
-</pre></div>
+<p>You can use the <a class="reference external" href="https://docs.djangoproject.com/en/1.5/ref/django-admin/#django-admin-loaddata">loaddata</a> command as well:</p>
+<div class="highlight-python"><pre>django-admin.py loaddata data.xliff</pre>
 </div>
-<div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;trans-unit</span> <span class="na">d:keytype=</span><span class="s">&quot;pk&quot;</span>
-            <span class="na">d:to=</span><span class="s">&quot;simpleapp.author&quot;</span>
-            <span class="na">restype=</span><span class="s">&quot;x-ForeignKey&quot;</span>
-            <span class="na">d:rel=</span><span class="s">&quot;ManyToOneRel&quot;</span>
-            <span class="na">resname=</span><span class="s">&quot;author&quot;</span>
-            <span class="na">translate=</span><span class="s">&quot;no&quot;</span>
-            <span class="na">id=</span><span class="s">&quot;author&quot;</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;source&gt;</span>500<span class="nt">&lt;/source&gt;</span>
-<span class="nt">&lt;/trans-unit&gt;</span>
-<span class="nt">&lt;trans-unit</span> <span class="na">maxwidth=</span><span class="s">&quot;50&quot;</span>
-            <span class="na">restype=</span><span class="s">&quot;x-CharField&quot;</span>
-            <span class="na">size-unit=</span><span class="s">&quot;char&quot;</span>
-            <span class="na">resname=</span><span class="s">&quot;headline&quot;</span>
-            <span class="na">translate=</span><span class="s">&quot;yes&quot;</span>
-            <span class="na">id=</span><span class="s">&quot;headline&quot;</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;source&gt;</span>Social media collapses. World still turns.<span class="nt">&lt;/source&gt;</span>
-<span class="nt">&lt;/trans-unit&gt;</span>
-</pre></div>
 </div>
 </div>
 

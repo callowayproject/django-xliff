@@ -288,7 +288,13 @@ class Deserializer(base.Deserializer):
                 if field_node.getElementsByTagName('None'):
                     value = None
                 else:
-                    value = field.to_python(getInnerText(field_node).strip())
+                    tag = field_node.getElementsByTagName('target')
+                    if len(tag) == 0:
+                        tag = field_node.getElementsByTagName('source')
+                    if len(tag) != 0:
+                        value = field.to_python(getInnerText(tag[0]).strip())
+                    else:
+                        value = None
                 data[field.name] = value
 
         # Return a DeserializedObject so that the m2m data has a place to live.
@@ -322,7 +328,7 @@ class Deserializer(base.Deserializer):
 
     def _handle_m2m_field_node(self, node, field):
         """
-        Handle a <field> node for a ManyToManyField.
+        Handle a <trans-unit> node for a ManyToManyField.
         """
         if hasattr(field.rel.to._default_manager, 'get_by_natural_key'):
             keytype = node.getAttribute('d:keytype')
