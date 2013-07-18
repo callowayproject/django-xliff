@@ -2,7 +2,7 @@
 Django XLIFF |version|
 ======================
 
-XML Localization Interchange File Format is an XML-based format created to standardize the way localizable data are passed between tools during localization. OASIS_ standardized XLIFF in 2002. Django-XLIFF conforms to `version 1.2`_.
+XML Localization Interchange File Format (XLIFF) is an XML-based format created to standardize the way localizable data are passed between tools during localization. OASIS_ standardized XLIFF in 2002. Django-XLIFF conforms to `version 1.2`_.
 
 .. _OASIS: https://www.oasis-open.org/
 .. _version 1.2: http://docs.oasis-open.org/xliff/xliff-core/xliff-core.html
@@ -55,6 +55,5 @@ Contents
    :maxdepth: 2
    :glob:
 
-   installation
    getting_started
    reference/index
