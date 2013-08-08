@@ -241,6 +241,10 @@ class Deserializer(base.Deserializer):
                 return self._handle_object(node)
         raise StopIteration
 
+    def next(self):
+        """Iteration iterface -- return the next item in the stream"""
+        return self.__next__()
+
     def _handle_object(self, node):
         """
         Convert an <group> node to a DeserializedObject.
