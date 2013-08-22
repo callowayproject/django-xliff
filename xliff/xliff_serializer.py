@@ -7,6 +7,8 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.core.serializers import base
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.generic import GenericForeignKey
 from django.db import models, DEFAULT_DB_ALIAS
 from django.utils.xmlutils import SimplerXMLGenerator
 from django.utils.encoding import smart_text
@@ -22,6 +24,20 @@ class Serializer(base.Serializer):
     """
     Serializes a QuerySet to XML.
     """
+
+    def _get_obj_pk(self, obj):
+        """
+        returns the objects pk or the natural key, joined
+        """
+        if self.use_natural_keys and hasattr(obj, 'natural_key'):
+            raw_nat_key = obj.natural_key()
+            obj_pk = smart_text(NATURAL_KEY_JOINER.join(raw_nat_key))
+            keytype = 'natural'
+        else:
+            obj_pk = obj._get_pk_val()
+            keytype = 'pk'
+
+        return obj_pk, keytype
 
     def indent(self, level):
         if self.options.get('indent', None) is not None:
@@ -44,10 +60,12 @@ class Serializer(base.Serializer):
         Start the <file><body> block
         """
         self.indent(1)
+        obj_key, keytype = self._get_obj_pk(obj)
         self.xml.startElement("file", {
-            "original": "%s.%s" % (smart_text(obj._meta), obj.pk),
+            "original": "%s.%s" % (smart_text(obj._meta), obj_key),
             "datatype": "database",
-            "source-language": settings.LANGUAGE_CODE
+            "source-language": settings.LANGUAGE_CODE,
+            "d:keytype": keytype,
         })
         self.xml.startElement("body", {})
 
@@ -77,8 +95,12 @@ class Serializer(base.Serializer):
         self.start_fileblock(obj)
 
         self.indent(2)
-        obj_pk = obj._get_pk_val()
-        attrs = {"restype": "row", }
+
+        obj_pk, keytype = self._get_obj_pk(obj)
+        attrs = {
+            "restype": "row",
+            "d:keytype": keytype
+        }
         if obj_pk is not None:
             attrs["resname"] = "%s.%s" % (smart_text(obj._meta), obj_pk)
         else:
@@ -200,6 +222,36 @@ class Serializer(base.Serializer):
             for relobj in getattr(obj, field.name).iterator():
                 handle_m2m(relobj)
 
+    def handle_gfk_field(self, obj, field):
+        """
+        Handle the GenericForeignKey
+        <trans-unit id=<gfk.name>
+        """
+        obj_pk, keytype = self._get_obj_pk(getattr(obj, field.ct_field))
+        attrs = {
+            "id": field.name,
+            "resname": field.name,
+            "restype": "x-%s" % field.__class__.__name__,
+            "translate": "no",
+            "d:keytype": keytype,
+            "d:rel": "GenericManyToOneRel",
+            "d:to": obj_pk,
+        }
+        self.xml.startElement("trans-unit", attrs)
+        self.indent(4)
+        self.xml.startElement("source", {})
+        # Get a "string version" of the object's data.
+        gfk_obj = getattr(obj, field.name)
+        if gfk_obj is not None:
+            gfk_pk, keytype = self._get_obj_pk(gfk_obj)
+            self.xml.characters(gfk_pk)
+        else:
+            self.xml.addQuickElement("None")
+
+        self.xml.endElement("source")
+        self.indent(3)
+        self.xml.endElement("trans-unit")
+
     def _start_relational_field(self, field, field_id="", keytype="pk"):
         """
         Helper to output the <trans-unit> element for relational fields
@@ -256,18 +308,28 @@ class Deserializer(base.Deserializer):
         # Start building a data dictionary from the object.
         # If the node is missing the pk set it to None
         bits = node.getAttribute("resname").split(".")
+        keytype = node.getAttribute("d:keytype") or 'pk'
         if len(bits) == 3:
             pk = bits[2]
         else:
             pk = None
 
-        data = {
-            Model._meta.pk.attname: Model._meta.pk.to_python(pk)
-        }
+        data = {}
+
+        if keytype == 'pk':
+            data[Model._meta.pk.attname] = Model._meta.pk.to_python(pk)
+        else:
+            try:
+                data[Model._meta.pk.attname] = Model.objects.get_by_natural_key(pk).pk
+            except (Model.DoesNotExist, AttributeError):
+                pass
 
         # Also start building a dict of m2m data (this is saved as
         # {m2m_accessor_attribute : [list_of_related_objects]})
         m2m_data = defaultdict(list)
+
+        # Create a reference for genericForeignKeys, if necessary
+        virtual_fields = dict([(x.name, x) for x in Model._meta.virtual_fields])
 
         # Deseralize each field.
         for field_node in node.getElementsByTagName("trans-unit"):
@@ -280,10 +342,18 @@ class Deserializer(base.Deserializer):
             # Get the field from the Model. This will raise a
             # FieldDoesNotExist if, well, the field doesn't exist, which will
             # be propagated correctly.
-            field = Model._meta.get_field(field_name)
+            try:
+                field = Model._meta.get_field(field_name)
+            except:
+                if field_name in virtual_fields:
+                    field = virtual_fields[field_name]
+                else:
+                    raise
 
             # As is usually the case, relation fields get the special treatment.
-            if field.rel and isinstance(field.rel, models.ManyToManyRel):
+            if isinstance(field, GenericForeignKey):
+                data[field.name] = self._handle_gfk_field_node(field_node, field)
+            elif field.rel and isinstance(field.rel, models.ManyToManyRel):
                 # There can be multiple instances since each relation has its own tag
                 m2m_data[field.name].append(self._handle_m2m_field_node(field_node, field))
             elif field.rel and isinstance(field.rel, models.ManyToOneRel):
@@ -346,6 +416,24 @@ class Deserializer(base.Deserializer):
         else:
             return field.rel.to._meta.pk.to_python(getInnerText(node).strip())
 
+    def _handle_gfk_field_node(self, node, field):
+        """
+        Handle a <trans-unit> for a GenericForeignKey
+        """
+        if node.getElementsByTagName('None'):
+            return None
+        ct_key = node.getAttribute("d:to").split(NATURAL_KEY_JOINER)
+        ctype = ContentType.objects.get_by_natural_key(*ct_key)
+        Model = ctype.model_class()
+        if hasattr(Model._default_manager, 'get_by_natural_key'):
+            value = getInnerText(node).strip()
+            field_value = value.split(NATURAL_KEY_JOINER)
+            obj = Model._default_manager.db_manager(self.db).get_by_natural_key(*field_value)
+            return obj
+        else:
+            field_value = getInnerText(node).strip()
+            return Model._default_manager.db_manager(self.db).get(pk=Model._meta.pk.to_python(field_value))
+
     def _get_model_from_node(self, node, attr):
         """
         Helper to look up a model from a <group resname=...> or a <trans-unit
@@ -353,7 +441,6 @@ class Deserializer(base.Deserializer):
         """
         model_identifier = node.getAttribute(attr)
         if not model_identifier:
-            print node.toprettyxml()
             raise base.DeserializationError(
                 "<%s> node is missing the required '%s' attribute" \
                     % (node.nodeName, attr))

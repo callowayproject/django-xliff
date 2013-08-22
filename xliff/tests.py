@@ -137,7 +137,6 @@ class SerializersTestBase(object):
                                            Article.objects.all())
         serial_str = serial_str.replace(old_headline, new_headline)
         modellist = list(serializers.deserialize(self.serializer_name, serial_str))
-
         # Prior to saving, old headline is in place
         self.assertTrue(Article.objects.filter(headline=old_headline))
         self.assertFalse(Article.objects.filter(headline=new_headline))
@@ -462,6 +461,24 @@ def generic_create(pk, klass, data):
     return [instance]
 
 
+def nk_create(nk, klass, data):
+    instance = klass()
+    setattr(instance, 'data', data)
+    models.Model.save_base(instance, raw=True)
+    return [instance]
+
+
+def nfk_create(pk, klass, data):
+    instance = klass(id=pk)
+    if data is not None:
+        data_obj = klass._meta.get_field('data').rel.to.objects.get_by_natural_key(data)
+        setattr(instance, 'data_id', data_obj.pk)
+    else:
+        setattr(instance, 'data_id', data)
+    models.Model.save_base(instance, raw=True)
+    return [instance]
+
+
 def fk_create(pk, klass, data):
     instance = klass(id=pk)
     setattr(instance, 'data_id', data)
@@ -536,6 +553,20 @@ def generic_compare(testcase, pk, klass, data):
     testcase.assertEqual(data[1:], [t.data for t in instance.tags.order_by('id')])
 
 
+def nk_compare(testcase, nk, klass, data):
+    if nk is not None:
+        instance = klass.objects.get_by_natural_key(nk)
+        testcase.assertEqual(data, instance.data_id)
+    else:
+        return  # No natural key, so nothing to compare
+
+
+def nfk_compare(testcase, pk, klass, data):
+    instance = klass.objects.get(id=pk)
+    if instance.data is not None:
+        testcase.assertEqual(data, ";".join(instance.data.natural_key()))
+
+
 def fk_compare(testcase, pk, klass, data):
     instance = klass.objects.get(id=pk)
     testcase.assertEqual(data, instance.data_id)
@@ -581,6 +612,8 @@ def inherited_compare(testcase, pk, klass, data):
 # and one to compare objects of that type
 data_obj = (data_create, data_compare)
 generic_obj = (generic_create, generic_compare)
+nk_obj = (nk_create, nk_compare)
+nfk_obj = (nfk_create, nfk_compare)
 fk_obj = (fk_create, fk_compare)
 m2m_obj = (m2m_create, m2m_compare)
 im2m_obj = (im2m_create, im2m_compare)
@@ -761,9 +794,9 @@ The end."""),
 ]
 
 natural_key_test_data = [
-    (data_obj, 1100, NaturalKeyAnchor, "Natural Key Anghor"),
-    (fk_obj, 1101, FKDataNaturalKey, 1100),
-    (fk_obj, 1102, FKDataNaturalKey, None),
+    (nk_obj, None, NaturalKeyAnchor, "Natural Key Anghor"),
+    (nfk_obj, 1101, FKDataNaturalKey, "Natural Key Anghor"),
+    (nfk_obj, 1102, FKDataNaturalKey, None),
 ]
 
 # Because Oracle treats the empty string as NULL, Oracle is expected to fail
@@ -870,7 +903,8 @@ def naturalKeySerializerTest(format, self):
     # Serialize the test database
     serialized_data = serializers.serialize(format, objects, indent=2,
         use_natural_keys=True)
-
+    for obj in objects:
+        obj.delete()
     for obj in serializers.deserialize(format, serialized_data):
         obj.save()
 
