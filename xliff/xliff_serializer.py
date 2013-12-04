@@ -244,7 +244,8 @@ class Serializer(base.Serializer):
         gfk_obj = getattr(obj, field.name)
         if gfk_obj is not None:
             gfk_pk, keytype = self._get_obj_pk(gfk_obj)
-            self.xml.characters(gfk_pk)
+            if keytype == 'natural':
+                self.xml.characters(gfk_pk)
         else:
             self.xml.addQuickElement("None")
 
